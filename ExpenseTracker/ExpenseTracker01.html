@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <style>
+        #abhi {
+            background-color: red;
+            border-color: green;
+        }
+
+        #abhi1 {
+            background-color: yellow;
+            border-color:blue;
+        }
+    </style>
+</head>
+
+<body>
+    <form onsubmit="saveToLocalStorage(event)">
+        <labe>Expense Amount</label>
+            <input id="examount" type="text" name="examount" required >
+            <label>Description</label>
+            <input id="Description" type="text" name="Description" required>
+            <label>Choose a Category</label>
+            <select name="Category" id="Category">
+                <option value="Fuel">Fuel</option>
+                <option value="Food">Food</option>
+                <option value="Electricity">Electricity</option>
+                <option value="Movie">Movie</option>
+              </select required>
+            <button>Add Expense</button>
+    </form>
+    <ul id="listOfItems"></ul>
+    <script>
+        function saveToLocalStorage(event) {
+            event.preventDefault();
+            const examount = event.target.examount.value;
+            const Description = event.target.Description.value;
+            const Category = event.target.Category.value;
+
+            // localStorage.setItem('name',name);
+            // localStorage.setItem('email',email);
+            // localStorage.setItem('phone ',phone);
+
+            const obj = {
+                examount: examount,
+               Description:Description,
+               Category:Category
+            }
+            // the new functionality for the n no. of users
+            localStorage.setItem(Description, JSON.stringify(obj));
+            showNewUserOnScreen(obj);
+
+        }
+
+
+        window.addEventListener("DOMContentLoaded", () => {
+            const localStorageObj = localStorage;
+            const localstoragekeys = Object.keys(localStorageObj)
+
+            for (var i = 0; i < localstoragekeys.length; i++) {
+                const key = localstoragekeys[i]
+                const userDetailsString = localStorageObj[key];
+                const userDetailsObj = JSON.parse(userDetailsString);
+                showNewUserOnScreen(userDetailsObj)
+            }
+        })
+
+        function showNewUserOnScreen(user) {
+
+
+            document.getElementById('examount').value = '';
+                document.getElementById('Description').value = '';
+                document.getElementById('Category').value ='';
+
+
+
+            if(localStorage.getItem(user.Description) !== null){
+                    removeUserFromScreen(user.Description)
+                }
+            const parentNode = document.getElementById('listOfItems');
+            const childHTML = `<li id="${user.Description}"> ${user.examount} - ${user.Description} - ${user.Category}
+                                        <button id="abhi" onclick=deleteUser('${user.Description}')> Delete Expense </button>
+                                        <button id="abhi1" onclick=editUserDetails('${user.Description}','${user.examount}','${user.Category}')>Edit Expense </button>
+        
+                                     </li>`
+
+            parentNode.innerHTML = parentNode.innerHTML + childHTML;
+        }
+
+
+
+        function editUserDetails(Description, examount,Category) {
+
+            document.getElementById('Description').value = Description;
+            document.getElementById('examount').value = examount;
+            document.getElementById('Category').value = Category;
+
+            deleteUser(Description)
+        }
+
+
+        function deleteUser(Description) {
+            console.log(Description)
+            localStorage.removeItem(Description);
+            removeUserFromScreen(Description);
+
+        }
+
+        function removeUserFromScreen(Description) {
+            const parentNode = document.getElementById('listOfItems');
+            const childNodeToBeDeleted = document.getElementById(Description);
+
+            if(childNodeToBeDeleted) {
+                    parentNode.removeChild(childNodeToBeDeleted)
+                }
+        }
+
+    </script>
+</body>
+
+</html>
